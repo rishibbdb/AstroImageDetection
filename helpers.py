@@ -1,82 +1,91 @@
 from astropy.io import fits
+from matplotlib.colors import LogNorm
 from functools import reduce
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
 from matplotlib.colors import LinearSegmentedColormap
-import healpy as hp
 from reproject import reproject_from_healpix
 from astropy.wcs import WCS
 from astropy.coordinates import Angle, SkyCoord
 import astropy.units as u
 import astropy.wcs.utils as astropy_utils
 from astropy.io.fits import Header
+import astropy
+from astropy.wcs.utils import pixel_to_skycoord
 import math
 import tempfile
 import urllib
-import base64
+import matplotlib.cm as cm
 from datetime import datetime
-import json
 import copy
 import yaml
-import os
 import re
 from threeML import *
 from hawc_hal import HAL, HealpixConeROI, HealpixMapROI
 from astropy.table import Table
 from matplotlib.patches import Ellipse
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.append("imagecatalog/")
 #Import HESS catalog
-hess_catalog = Table.read("datasets/hgps_catalog_v1.fits.gz")
-hess_sourcename = hess_catalog['Source_Name']
-hess_coords = SkyCoord(l=hess_catalog["GLON"], b=hess_catalog["GLAT"], frame="galactic")
+# hess_catalog = Table.read("datasets/hgps_catalog_v1.fits.gz")
+# hess_sourcename = hess_catalog['Source_Name']
+# hess_coords = SkyCoord(l=hess_catalog["GLON"], b=hess_catalog["GLAT"], frame="galactic")
 
 #Import HAWC Catalog
-hawcv4_table = pd.read_csv('datasets/4hwc.txt', delimiter=',')
-hwc4_name = hawcv4_table['Name'].tolist()
-hwc4_ra = hawcv4_table['Ra'].tolist()
-hwc4_dec = hawcv4_table['Dec'].tolist()
-hwc4_ext = hawcv4_table['Ext'].tolist()
-hawcv4_coords = SkyCoord(ra=hwc4_ra, dec=hwc4_dec, unit='deg', frame='icrs')
+# hawcv4_table = pd.read_csv('datasets/4hwc.txt', delimiter=',')
+# hwc4_name = hawcv4_table['Name'].tolist()
+# hwc4_ra = hawcv4_table['Ra'].tolist()
+# hwc4_dec = hawcv4_table['Dec'].tolist()
+# hwc4_ext = hawcv4_table['Ext'].tolist()
+# hawcv4_coords = SkyCoord(ra=hwc4_ra, dec=hwc4_dec, unit='deg', frame='icrs')
+
+# #Import lenscat 
+# lenscat_table = pd.read_csv('datasets/lenscat.csv', delimiter=',')
+# lenscat_name = lenscat_table['name'].tolist()
+# lenscat_ra = lenscat_table['RA [deg]'].tolist()
+# lenscat_dec = lenscat_table['DEC [deg]'].tolist()
+# lenscat_coords = SkyCoord(ra=lenscat_ra, dec=lenscat_dec, unit='deg', frame='icrs')
 
 
-#Import LHAASO Catalog
-df = pd.read_csv("datasets/lhaaso_cat.csv", comment="#", header=None)
-df.columns = [
-    "Source name", "Components", "RA_2000", "Dec_2000", "Sigma_p95_stat",
-    "r_39", "TS", "N0", "Gamma", "TS_100", "Association"
-]
+# #Import LHAASO Catalog
+# df = pd.read_csv("datasets/lhaaso_cat.csv", comment="#", header=None)
+# df.columns = [
+#     "Source name", "Components", "RA_2000", "Dec_2000", "Sigma_p95_stat",
+#     "r_39", "TS", "N0", "Gamma", "TS_100", "Association"
+# ]
 
-def clean_value(val):
-    if pd.isna(val):
-        return np.nan
-    val = str(val).replace('$', '')
-    if '<' in val:
-        return float(val.replace('<', '').strip())
-    elif 'pm' in val or '±' in val or '\\pm' in val:
-        parts = re.split(r'±|\\pm|pm', val)
-        try:
-            return float(parts[0].strip())
-        except:
-            return np.nan
-    try:
-        return float(val)
-    except:
-        return val
-for col in ["Source name","r_39", "N0", "Gamma"]:
-    df[col] = df[col].apply(clean_value)
-df["Source name"] = df["Source name"].replace(r'^\s*$', np.nan, regex=True).ffill()
+# def clean_value(val):
+#     if pd.isna(val):
+#         return np.nan
+#     val = str(val).replace('$', '')
+#     if '<' in val:
+#         return float(val.replace('<', '').strip())
+#     elif 'pm' in val or '±' in val or '\\pm' in val:
+#         parts = re.split(r'±|\\pm|pm', val)
+#         try:
+#             return float(parts[0].strip())
+#         except:
+#             return np.nan
+#     try:
+#         return float(val)
+#     except:
+#         return val
+# for col in ["Source name","r_39", "N0", "Gamma"]:
+#     df[col] = df[col].apply(clean_value)
+# df["Source name"] = df["Source name"].replace(r'^\s*$', np.nan, regex=True).ffill()
 
 
-#Import Fermi-LAT Catalog
-fermi_fits = fits.open('datasets/gll_psc_v35.fits')
-p_data = fermi_fits[1].data
-fermi_fulltable = Table(p_data)
+# #Import Fermi-LAT Catalog
+# fermi_fits = fits.open('datasets/gll_psc_v35.fits')
+# p_data = fermi_fits[1].data
+# fermi_fulltable = Table(p_data)
 
 def loadmap(filename, coord_sys, coords,*args):
-    print("Coords=",coords)
+    # print("Coords=",coords)
     with fits.open(filename) as ihdu:
         if 'xyrange' in args:
             e1, e2, e3 , e4 = coords
@@ -87,7 +96,7 @@ def loadmap(filename, coord_sys, coords,*args):
             cX, cY, xR, yR = coords
             xR = int(xR/(1/360))
             yR = int(yR/(1/360))
-        print(cX, cY, xR, yR)
+        # print(cX, cY, xR, yR)
         if coord_sys == 'C':   ###Celestial Coordinate System
             target_header = Header()
             target_header['NAXIS'] = 2
@@ -104,7 +113,7 @@ def loadmap(filename, coord_sys, coords,*args):
             target_header['CDELT2'] = 1./360
             target_header['CUNIT2'] = 'deg     '
             target_header['COORDSYS'] = 'icrs    '
-            print("A")
+            print("Loading Celestial Map")
         if coord_sys == 'G':  ###Galactic Coordinate System
             target_header = Header()
             target_header['NAXIS'] = 2
@@ -121,7 +130,7 @@ def loadmap(filename, coord_sys, coords,*args):
             target_header['CDELT2'] = 2./360
             target_header['CUNIT2'] = 'deg     '
             target_header['COORDSYS'] = 'galactic    '
-            print("B")
+            print("Loading Galactic Map")
         
         skymap_data = ihdu[1].data["significance"] #.data["significance"]
         ihdu[1].header['COORDSYS'] = 'icrs    '
@@ -189,7 +198,7 @@ def loadvgpsmap(filename, coord_sys, coords,*args):
         
     return array, footprint, wcs
 
-def plot_4FGL(ax, wcs, ra_center, dec_center, xlength, ylength):
+def plot_4FGL(ax, wcs, ra_center, dec_center, xlength, ylength, npix):
     masks = [fermi_fulltable['GLON'] >= (float(ra_center)-xlength),  fermi_fulltable['GLON'] <= float(ra_center)+xlength,  fermi_fulltable['GLAT'] >= float(dec_center)-ylength,  fermi_fulltable['GLAT'] <= float(dec_center)+ylength]
     full_mask = reduce(np.logical_and, masks)
     fermi_table = fermi_fulltable[full_mask]
@@ -210,16 +219,23 @@ def plot_4FGL(ax, wcs, ra_center, dec_center, xlength, ylength):
         linestyle='-'), color='cyan', rotation=0, ha='right', va='center' ,
         path_effects=[pe.withStroke(linewidth=2, foreground="gray")])
         center = (float(pixelcoord[0]), float(pixelcoord[1]))
-        fermiext = Ellipse(xy=center, width=fermi_semi_major[i]/0.0025, height=fermi_semi_minor[i]/0.0025, angle=fermi_angle[i], fc='None', ec='cyan', linewidth=2)
+        fermiext = Ellipse(xy=center, width=fermi_semi_major[i]/npix, height=fermi_semi_minor[i]/npix, angle=fermi_angle[i], fc='None', ec='cyan', linewidth=2)
         ax.add_patch(fermiext)
 
-def label_4hwc(ax, wcs):
-    if len(ax.shape) == 1:
-        return plot_4hwc1D(ax, wcs)
-    if len(ax.shape)== 2:
-        return plot_4hwc2D(ax, wcs)
 
-def plot_4hwc1D(ax, wcs):
+def plot_lenscat(ax, wcs, npix):
+    for i in range(len(lenscat_name)):
+        coord2 = SkyCoord(ra=lenscat_ra[i]*u.deg, dec=lenscat_dec[i]*u.deg)
+        pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
+        # print(coord2, pixelcoord)
+        ax.plot(pixelcoord[0], pixelcoord[1], marker='x', markersize=5, color='white')
+        ax.annotate(lenscat_name[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', xytext=(100, 90), 
+        textcoords='offset points', arrowprops=dict(arrowstyle="-",color='white', linewidth=2, 
+        linestyle='-.'), color='white', rotation=30, ha='right', va='center' ,
+        path_effects=[pe.withStroke(linewidth=2, foreground="gray")])
+
+
+def plot_4hwc1D(ax, wcs, npix):
     try:
         for i in range(len(ax)):
             for i in range(len(hwc4_name)):
@@ -227,10 +243,10 @@ def plot_4hwc1D(ax, wcs):
                 pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
                 ax[i].plot(pixelcoord[0], pixelcoord[1], marker='x', markersize=5, color='white')
                 ax[i].annotate('4HWC '+hwc4_name[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', xytext=(100, 90), 
-                textcoords='offset points', arrowprops=dict(arrowstyle="-",color='gray', linewidth=2, 
-                linestyle='-.'), color='white', rotation=0, ha='right', va='center' ,
+                textcoords='offset points', arrowprops=dict(arrowstyle="-",color='white', linewidth=2, 
+                linestyle='-.'), color='white', rotation=30, ha='right', va='center' ,
                 path_effects=[pe.withStroke(linewidth=2, foreground="gray")])
-                hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/0.005, color='red', linewidth=2, fill=False, linestyle='-')
+                hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/npix, color='white', linewidth=2, fill=False, linestyle='-')
                 ax[i].add_patch(hawcext)
     except:
         for i in range(len(hwc4_name)):
@@ -238,28 +254,13 @@ def plot_4hwc1D(ax, wcs):
             pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
             ax.plot(pixelcoord[0], pixelcoord[1], marker='x', markersize=5, color='white')
             ax.annotate('4HWC '+hwc4_name[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', xytext=(100, -90), 
-            textcoords='offset points', arrowprops=dict(arrowstyle="-",color='gray', linewidth=2, 
-            linestyle='-.'), color='white', rotation=0, ha='right', va='center' ,
+            textcoords='offset points', arrowprops=dict(arrowstyle="-",color='white', linewidth=2, 
+            linestyle='-.'), color='white', rotation=30, ha='right', va='center' ,
             path_effects=[pe.withStroke(linewidth=2, foreground="gray")])
-            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/0.005, color='red', linewidth=2, fill=False, linestyle='-')
+            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/npix, color='white', linewidth=2, fill=False, linestyle='-')
             ax.add_patch(hawcext)
-        hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/0.005, color='red', linewidth=2, fill=False, linestyle='-', label='4HWC Extension')
+        hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/npix, color='white', linewidth=2, fill=False, linestyle='-', label='4HWC Extension')
         ax.add_patch(hawcext)
-
-def plot_4hwc2D(ax, wcs):
-    n , m = ax.shape
-    for i in range(n):
-        for j in range(m):
-            for i in range(len(hwc4_name)):
-                coord2 = SkyCoord(ra=hwc4_ra[i]*u.deg, dec=hwc4_dec[i]*u.deg)
-                pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
-                ax[i][j].plot(pixelcoord[0], pixelcoord[1], marker='o', markersize=5, color='white')
-                ax[i][j].annotate('4HWC '+hwc4_name[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', xytext=(100, 90), 
-                textcoords='offset points', arrowprops=dict(arrowstyle="-",color='gray', linewidth=2, 
-                linestyle='-.'), color='white', rotation=0, ha='right', va='center' ,
-                path_effects=[pe.withStroke(linewidth=2, foreground="gray")])
-                hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), hwc4_ext[i]/0.0025, color='red', linewidth=2, fill=False, linestyle='-')
-                ax[i][j].add_patch(hawcext)
 
 def invrelu(x, floor_min=-3):
 	return np.maximum(floor_min, x)
@@ -317,7 +318,7 @@ def plot_ext_blob(ax, ext_blobs, wcs):
     except:
         pass
 
-def blob_filter_intensity(blobs, image, min_intensity, wcs):
+def blob_filter_intensity(blobs, image, min_intensity, wcs, npix):
     hfiltered_blobs = []
     hfiltered_coords = []
     hfiltered_radius = []
@@ -333,8 +334,8 @@ def blob_filter_intensity(blobs, image, min_intensity, wcs):
             coord = astropy_utils.pixel_to_skycoord(x, y, wcs=wcs)
             hfiltered_blobs.append(blob)
             hfiltered_coords.append(coord.icrs)
-            hfiltered_radius.append(r*(1/360))
-            print(r"Blob Intensity {}, Coords ({}, {}), Radius {}, Pixel Radius {}".format(mean_intensity, coord.icrs.ra, coord.icrs.dec, r, r*(1/360)))
+            hfiltered_radius.append(r*npix)
+            print(r"Blob Intensity {}, Coords ({}, {}), Radius {}, Pixel Radius {}".format(mean_intensity, coord.icrs.ra, coord.icrs.dec, r, r*npix))
     return hfiltered_blobs, hfiltered_coords, hfiltered_radius
 
 
@@ -427,22 +428,62 @@ def injected_sources_plot(names, ra, dec, ext, ax, wcs):
         ax.add_patch(c)
 
 # plotting custom sources
-def custom_sources_plot(names, ra, dec, ext, ax, wcs, color, cgps=False, xray=False):
+def custom_sources_plot(names, ra, dec, ext, label_rot, ax, wcs, npix):
+    color = cm.Blues(np.linspace(0, 1, len(names)))
+    for i in range(len(names)):
+        print(ra[i], dec[i])
+        coord2 = SkyCoord(ra=ra[i]*u.deg, dec=dec[i]*u.deg)
+        pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
+        ax.plot(pixelcoord[0], pixelcoord[1], marker='x', markersize=5, color='white')
+        if i%2==0:
+            
+            ax.annotate(names[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', fontsize=12, xytext=(100, 90), 
+            textcoords='offset pixels', arrowprops=dict(arrowstyle="-",color='red', linewidth=2, 
+            linestyle='-.'), color='white', rotation=label_rot, ha='right', va='center' ,
+            path_effects=[pe.withStroke(linewidth=2, foreground="red")])
+        else:
+            ax.annotate(names[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', fontsize=12, xytext=(100, -90), 
+            textcoords='offset pixels', arrowprops=dict(arrowstyle="-",color='red', linewidth=2, 
+            linestyle='-.'), color='white', rotation=label_rot, ha='right', va='center' ,
+            path_effects=[pe.withStroke(linewidth=2, foreground="red")])
+        r = ext[i] / npix
+        c = plt.Circle((pixelcoord[0], pixelcoord[1]), r, color='red', linewidth=3, fill=False)
+        ax.add_patch(c)
+
+def custom_sources_plot1(names, ra, dec, ext, label_rot, ax, wcs, npix):
+    color = cm.Blues(np.linspace(0, 1, len(names)))
+    for i in range(len(names)):
+        print(ra[i], dec[i])
+        coord2 = SkyCoord(ra=ra[i]*u.deg, dec=dec[i]*u.deg)
+        pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
+        ax.plot(pixelcoord[0], pixelcoord[1], marker='x', markersize=5, color='white')
+        if i%2==0:
+            
+            ax.annotate(names[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', fontsize=12, xytext=(100, 90), 
+            textcoords='offset pixels', arrowprops=dict(arrowstyle="-",color='grey', linewidth=2, 
+            linestyle='-.'), color='white', rotation=label_rot, ha='right', va='center' ,
+            path_effects=[pe.withStroke(linewidth=2, foreground="gray")])
+        else:
+            ax.annotate(names[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', fontsize=12, xytext=(100, -90), 
+            textcoords='offset pixels', arrowprops=dict(arrowstyle="-",color='rgrey', linewidth=2, 
+            linestyle='-.'), color='white', rotation=label_rot, ha='right', va='center' ,
+            path_effects=[pe.withStroke(linewidth=2, foreground="red")])
+        r = ext[i] / npix
+        c = plt.Circle((pixelcoord[0], pixelcoord[1]), r, color='gray', linewidth=3, fill=False)
+        ax.add_patch(c)
+
+def custom_sources_plot2(names, ra, dec, ext, ax, wcs, npix):
+    color = cm.Blues(np.linspace(0, 1, len(names)))
     for i in range(len(names)):
         coord2 = SkyCoord(ra=ra[i]*u.deg, dec=dec[i]*u.deg)
         pixelcoord = astropy_utils.skycoord_to_pixel(coord2, wcs)
         ax.plot(pixelcoord[0], pixelcoord[1], marker='o', markersize=5, color='white')
-        ax.annotate('4HWC'+names[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', fontsize=16, xytext=(100, 90), 
-        textcoords='offset pixels', arrowprops=dict(arrowstyle="-",color='white', linewidth=2, 
-        linestyle='-.'), color='white', rotation=0, ha='right', va='center' ,
+        ax.annotate('5HWC '+names[i],xy=(pixelcoord[0], pixelcoord[1]), xycoords='data', fontsize=12, xytext=(100, 90), 
+        textcoords='offset pixels', arrowprops=dict(arrowstyle="-",color='red', linewidth=2, 
+        linestyle='-.'), color='white', rotation=30, ha='right', va='center' ,
         path_effects=[pe.withStroke(linewidth=2, foreground="red")])
-        if cgps:
-            r = ext[i] / 0.05
-        elif xray:
-            r = ext[i] / 0.004999999
-        else:
-            r = ext[i] / 0.0027
-        c = plt.Circle((pixelcoord[0], pixelcoord[1]), r, color=color[i], linewidth=3, fill=False)
+        r = ext[i] / npix
+        c = plt.Circle((pixelcoord[0], pixelcoord[1]), r, color='red', linewidth=3, fill=False)
         ax.add_patch(c)
 
 # plotting fermi sources
@@ -529,9 +570,9 @@ def parse_yaml_file(filepath):
 
 def plot_ax_label(ax, coord_sys):
     if coord_sys == 'C':
-        ax.set_xlabel(r"$ra^o$")
-        ax.set_ylabel(r"$dec^o$")
-    else:
+        ax.set_xlabel(r"$ra[^o]$")
+        ax.set_ylabel(r"$dec[^o]$")
+    elif coord_sys == 'G':
         ax.set_ylabel(r"$b^o$")
         ax.set_xlabel(r"$l^o$")
 
@@ -649,7 +690,7 @@ def setupMilagroColormap(amin, amax, threshold, ncolors):
 
     return textcolor, newcm
 
-def plot_1lhaaso(ax, wcs):
+def plot_1lhaaso(ax, wcs, npix):
     for i in range(len(df)):
         if df['RA_2000'][i] != ' ':
             coord2 = SkyCoord(ra=float(df['RA_2000'][i])*u.deg, dec=float(df['Dec_2000'][i])*u.deg)
@@ -660,11 +701,11 @@ def plot_1lhaaso(ax, wcs):
             textcoords='offset points', arrowprops=dict(arrowstyle="-",color='blue', linewidth=2, 
             linestyle='-.'), color='white', rotation=0, ha='right', va='center' ,
             path_effects=[pe.withStroke(linewidth=2, foreground="blue")])
-            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), float(df['r_39'][i])/0.005, color='blue', linewidth=2, fill=False, linestyle='-')
+            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), float(df['r_39'][i])/npix, color='blue', linewidth=2, fill=False, linestyle='-')
             ax.add_patch(hawcext)
 
 
-def plot_hgps(ax, wcs):
+def plot_hgps(ax, wcs, npix):
     for i in range(len(hess_catalog)):
         coord2 = SkyCoord(ra=float(hess_catalog['RAJ2000'][i])*u.deg, dec=float(hess_catalog['DEJ2000'][i])*u.deg)
         coord_gal = coord2.galactic
@@ -675,10 +716,10 @@ def plot_hgps(ax, wcs):
         linestyle='-.'), color='gray', rotation=0, ha='right', va='center' ,
         path_effects=[pe.withStroke(linewidth=2, foreground="white")])
         if hess_catalog['Size'][i] != ' ':
-            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), float(hess_catalog['Size'][i])/0.005, color='white', linewidth=2, fill=False, linestyle='-')
+            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), float(hess_catalog['Size'][i])/npix, color='white', linewidth=2, fill=False, linestyle='-')
             ax.add_patch(hawcext)
         else:
-            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), float(0.01)/0.005, color='white', linewidth=2, fill=False, linestyle='-')
+            hawcext = plt.Circle((pixelcoord[0], pixelcoord[1]), float(0.01)/npix, color='white', linewidth=2, fill=False, linestyle='-')
             ax.add_patch(hawcext)
 
 
@@ -732,32 +773,301 @@ def plotblobs(ax, wcs, blobs):
         print("Plotting Extended blobs")
         plot_ext_blob(ax, blobs['extblobs2'], wcs)
 
-def makeplot(array, vmin, vmax, wcs, colormap, coordsys, title, xnum, ynum, save_dir, catalogs, blobs=None, pdf=False):
-    fig = plt.figure(figsize=(20,8))
-    ax = plt.subplot(1,1,1, projection=wcs)
-    im = ax.imshow(array, cmap=colormap, vmin=vmin, vmax=vmax)
-    fig.colorbar(im, orientation='vertical', fraction=0.046, pad=0.04, label='Significance')
-    if np.max(array) > 10:
-        levels = [5, 6, 7]
-        hi_transform = ax.get_transform(wcs)
-        ax.contour(array, levels=levels, transform=hi_transform, colors='black')
-    plot_ax_label(ax, coordsys)
-    if blobs:
-        print("Plotting blobs")
-        plotblobs(ax, wcs, blobs)
-    if catalogs:
-        print("Plotting Catalogs")
-        plotcatalogs(ax, wcs, *catalogs)
-    ax.set_title(title)
-    plt.xlim(0, xnum)
-    plt.ylim(0, ynum)
-    if pdf:
-        pdf.savefig(fig, bbox_inches='tight')
-    else:
-        plt.savefig(save_dir + f'{title}.png')
-    plt.clf()
+def ultimet(vmin, vmax, threshold, color_map='turbo', n=256, blend_fraction=0.05):
+
+    tnorm = (threshold - vmin) / (vmax - vmin)
+    bfrac = blend_fraction
+    t_low = max(tnorm - bfrac / 2, 0)
+    t_high = min(tnorm + bfrac / 2, 1)
+
+    n1 = int(t_low * n)
+    n2 = int((t_high - t_low) * n)
+    n3 = n - n1 - n2
+
+    gray_part = plt.cm.binary(np.linspace(0.2, 0.8, max(n1, 1))) 
+    blend = np.linspace(0, 1, max(n2, 1))
+    cgray = gray_part[-1] if len(gray_part) else plt.cm.binary(0.8)
+    cstart = plt.get_cmap(color_map)(0.0)
+    blend_part = (cgray * (1 - blend[:, None])) + (cstart * blend[:, None])
+    color_part = plt.get_cmap(color_map)(np.linspace(0, 1, max(n3, 1)))
+
+    colors = np.vstack((gray_part, blend_part, color_part))
+    cmap = LinearSegmentedColormap.from_list("ultimet_threshold", colors)
+
+    cmap.set_over(cmap(1.0))
+    cmap.set_under("white")
+    cmap.set_bad("gray")
+
+    return cmap
+
+def parse_pulsar_db(file_contents='/Users/rishi/Documents/Analysis/j1809/imagecatalog/datasets/psrcat_tar/psrcat.db'):
+    with open(file_contents, "r") as f:
+        db_text = f.read()
+    entries = db_text.strip().split('@-----------------------------------------------------------------')
+    pulsars = []
+    for entry in entries:
+        if not entry.strip():
+            continue
+        lines = entry.strip().splitlines()
+        pulsar = {}
+        for line in lines:
+            parts = line.split()
+            if not parts:
+                continue
+            key = parts[0]
+            if key in ["PSRJ", "RAJ", "DECJ"]:
+                pulsar[key] = parts[1]
+            elif key in ["PSRB", "RAJ", "DECJ"]:
+                pulsar[key] = parts[1]
+        if all(k in pulsar for k in ['PSRJ', 'RAJ', 'DECJ']):
+            pulsars.append(pulsar)
+    return pulsars
+
+def make_pulsar_plotter(marker_color='lime', label_color='white', marker_size=6, annotate=True):
+    def plot_pulsars(ax, wcs, pulsar_data):
+        for pulsar in pulsar_data:
+            # print(pulsar)
+            coord = SkyCoord(pulsar['RAJ'], pulsar['DECJ'], unit=(u.hourangle, u.deg))
+            x, y = coord.to_pixel(wcs)
+            ax.plot(x, y, marker='*', color=marker_color, markersize=marker_size)
+            if annotate:
+                ax.annotate(
+                    pulsar['PSRJ'],
+                    xy=(x, y),
+                    xycoords='data',
+                    xytext=(5, 5),
+                    textcoords='offset points',
+                    arrowprops=dict(arrowstyle="-", color='gray', linewidth=1),
+                    color=label_color,
+                    ha='left',
+                    va='bottom',
+                    path_effects=[pe.withStroke(linewidth=2, foreground="black")]
+                )
+    return plot_pulsars
+
 
 def gaussian_fit(x, amplitude, mean, stddev):
     return amplitude * np.exp(-((x - mean)**2) / (2 * stddev**2))
 def radius_to_sigma(R, fraction=0.6827):
     return R / np.sqrt(2 * np.log(1 / (1 - fraction)))
+ 
+def load_hawc_data(filename, x, y, xlength, ylength, coord_sys):
+    """
+    Load HAWC data from a given directory and observation ID.
+    
+    Parameters:
+    - hawc_dir: Directory containing HAWC data
+    - run: Run number
+    - obsid: Observation ID
+    
+    Returns:
+    - Dictionary containing the loaded data
+    """
+    if coord_sys == 'C':
+        print(f"ROI center in Celestial Coordintes = {x}, {y}")
+    else:
+        print(f"ROI center in Galactic Coordintes = {x}, {y}")
+
+    origin = [x, y, xlength, ylength] 
+
+    # Load the data from the specified file
+    array, footprint, wcs = loadmap(filename, coord_sys, origin, 'origin')
+    xnum = array.shape[1]
+    ynum = array.shape[0]
+    pixel_size = wcs.wcs.cdelt[1]
+    print(f'Degrees per pixel: {pixel_size} ')
+    return array, footprint, wcs, xnum, ynum, pixel_size
+
+def find_peak(array, wcs):
+    peak_index = np.unravel_index(np.argmax(array), array.shape)
+    a = astropy.wcs.utils.pixel_to_skycoord(peak_index[1], peak_index[0], wcs)
+    print("Peak intensity pixel location:", peak_index)
+    print("Peak intensity sky location:", a)
+    print("Peak intensity value:", array[peak_index])
+
+def find_well(array, wcs):
+    peak_index = np.unravel_index(np.argmin(array), array.shape)
+    a = astropy.wcs.utils.pixel_to_skycoord(peak_index[1], peak_index[0], wcs)
+    print("Well intensity pixel location:", peak_index)
+    print("Well intensity sky location:", a)
+    print("Well intensity value:", array[peak_index])
+
+def make_plots(array, wcs, npix, coordsys, threshold=4, vmin=-5, vmax=15, label_rot=0, blobs=None, contour=False, title=None, hotspots=None, hotspots1=None, save_fig=None, save_dir=None, pdf=False, cmap='inferno', figsize=(10, 6), save_name=None, **kwargs):
+    fig = plt.figure(figsize=(figsize[0] , figsize[1]))
+    ax = fig.add_subplot(1, 1, 1, projection=wcs)
+    if cmap=='ult':
+        ult = ultimet(vmin, vmax, threshold)
+        im = ax.imshow(array, cmap=ult, vmin=vmin, vmax=vmax)
+    else:
+        im = ax.imshow(array, cmap=cmap, vmin=vmin, vmax=vmax)
+    plt.colorbar(im, ax=ax, label=r'Significance($\sigma$)', fraction=0.046, pad=0.04)
+    ax.grid(True)
+
+    if hotspots is not None:
+        labelA = hotspots['Name']
+        raA = hotspots['ra']
+        decA = hotspots['dec']
+        extA = hotspots['ext']
+        custom_sources_plot(labelA, raA, decA, extA,label_rot, ax, wcs, npix)
+
+    if hotspots1 is not None:
+        labelA = hotspots1['Name']
+        raA = hotspots1['ra']
+        decA = hotspots1['dec']
+        extA = hotspots1['ext']
+        custom_sources_plot1(labelA, raA, decA, extA,label_rot, ax, wcs, npix)
+    if title:
+        ax.set_title(title)
+    if contour:
+        if np.max(array) > 15:
+            levels = [7, 9, 12, 13, 14, 15]
+            print(f"Plotting contours {levels}")
+            hi_transform = ax.get_transform(wcs)
+            ax.contour(array, levels=levels, transform=hi_transform, colors='black')
+        elif np.max(array) > 12:
+            levels = [5, 7, 9, 11]
+            print(f"Plotting contours {levels}")
+            hi_transform = ax.get_transform(wcs)
+            ax.contour(array, levels=levels, transform=hi_transform, colors='black')
+        elif np.max(array) > 5:
+            levels = [5, 6, 7]
+            print(f"Plotting contours {levels}")
+            hi_transform = ax.get_transform(wcs)
+            ax.contour(array, levels=levels, transform=hi_transform, colors='black')
+        else:
+            print("No contours to plot")
+    xnum, ynum  = array.shape[1], array.shape[0]
+    plot_ax_label(ax, coordsys)
+    ax.set_xlim(0, xnum)
+    ax.set_ylim(0, ynum)
+    ax.coords[0].set_format_unit('deg')
+    ax.coords[1].set_format_unit('deg') 
+    ax.grid(False)
+    plt.tight_layout()
+    if save_fig !=None:
+        if save_name == None:
+            save_name = title
+        if save_dir == None:
+            save_dir = '.'
+        plt.savefig(save_dir + f'{save_name}.png')
+        if pdf:
+            plt.savefig(save_dir + f'{save_name}.pdf')
+
+    return fig, ax
+
+def make_logplots(array, wcs, npix, coordsys, threshold=4, vmin=-5, vmax=15, blobs=None, contour=False, title=None, hotspots=None, save_dir=None, pdf=False, cmap='inferno', figsize=(10, 6), ax=None, **kwargs):
+    max_val = np.max(array)
+    min_val = np.min(array)
+    threshold = min_val + max_val/8
+    fig = plt.figure(figsize=(figsize[0] , figsize[1]))
+    ax = fig.add_subplot(1, 1, 1, projection=wcs)
+    if cmap=='ult':
+        ult = ultimet(min_val, max_val, threshold)
+        im = ax.imshow(array, cmap=ult,  norm=LogNorm(vmin=0.01, vmax=max_val))
+    else:
+        im = ax.imshow(array, cmap=cmap, vmin=vmin, vmax=vmax)
+    plt.colorbar(im, ax=ax, label=r'log(Significance($\sigma$))', fraction=0.046, pad=0.04)
+    ax.grid(False)
+
+
+    if hotspots is not None:
+        labelA = hotspots['Name']
+        raA = hotspots['ra']
+        decA = hotspots['dec']
+        extA = hotspots['ext']
+        # print(labelA, raA, decA, extA, ax, wcs, npix)
+        custom_sources_plot(labelA, raA, decA, extA, ax, wcs, npix)
+    if title:
+        ax.set_title(title)
+    if contour:
+        if np.max(array) > 15:
+            levels = [7, 9, 12, 13, 14, 15]
+            print(f"Plotting contours {levels}")
+            hi_transform = ax.get_transform(wcs)
+            ax.contour(array, levels=levels, transform=hi_transform, colors='black')
+        elif np.max(array) > 12:
+            levels = [5, 7, 9, 11]
+            print(f"Plotting contours {levels}")
+            hi_transform = ax.get_transform(wcs)
+            ax.contour(array, levels=levels, transform=hi_transform, colors='black')
+        elif np.max(array) > 5:
+            levels = [5, 6, 7]
+            print(f"Plotting contours {levels}")
+            hi_transform = ax.get_transform(wcs)
+            ax.contour(array, levels=levels, transform=hi_transform, colors='black')
+        else:
+            print("No contours to plot")
+    xnum, ynum  = array.shape[1], array.shape[0]
+    plot_ax_label(ax, coordsys)
+    ax.set_xlim(0, xnum)
+    ax.set_ylim(0, ynum)
+
+    if 'labels' in kwargs:
+        if '4hawc' in kwargs['labels']:
+            plot_4hwc1D(ax, wcs, npix)
+        if '1lhaaso' in kwargs['labels']:
+            plot_1lhaaso(ax, wcs, npix)
+        if 'hgps' in kwargs['labels']:
+            plot_hgps(ax, wcs, npix)
+        if '4fgl' in kwargs['labels']:
+            center_x, center_y = array.shape[1] // 2, array.shape[0] // 2
+            center_coord = pixel_to_skycoord(center_x, center_y, wcs)
+            try:
+                plot_4FGL(ax, wcs, center_coord.ra.deg, center_coord.dec.deg, array.shape[1] / 2, array.shape[0] / 2, npix)
+            except: 
+                plot_4FGL(ax, wcs, center_coord.l.deg, center_coord.b.deg, array.shape[1] / 2, array.shape[0] / 2, npix)
+        if 'snr' in kwargs['labels']:
+            plot_snrcat(ax, wcs)
+        if 'pulsar' in kwargs['labels']:
+            pulsar_data = parse_pulsar_db()
+            plot_pulsars = make_pulsar_plotter(marker_color='cyan')
+            plot_pulsars(ax, wcs, pulsar_data)
+    if blobs:
+        if 'psblobs' in blobs:
+            ps_data = blobs['psblobs']
+            plot_ps_blob(ax, ps_data, wcs)
+        if 'extblobs' in blobs:
+            ext_data = blobs['extblobs']
+            plot_ext_blob(ax, ext_data, wcs)
+    ax.grid(False)
+    plt.tight_layout()
+    plt.show()
+    if save_dir !=None:
+        if pdf:
+            pdf.savefig(fig, bbox_inches='tight')
+        else:
+            plt.savefig(save_dir + f'{title}.png')
+    plt.clf()
+
+def test():
+    print("Hello")
+
+def smooth_floor(x, floor_min=-3, sharpness=5):
+    """
+    Smoothly floors values below floor_min using a logistic function.
+
+    Parameters:
+        x         : array input
+        floor_min : minimum floor value
+        sharpness : how sharp the transition is (higher = sharper)
+
+    Returns:
+        Smoothly floored array
+    """
+    x = np.asarray(x)
+    transition = 1 / (1 + np.exp(-sharpness * (x - floor_min)))
+    return transition * x + (1 - transition) * floor_min
+
+def soft_floor(x, floor_min=-3, scale=1.0):
+    """
+    Soft floor using a smooth version of ReLU downward.
+
+    Parameters:
+        x         : input array
+        floor_min : soft floor value
+        scale     : controls smoothness (lower = smoother)
+
+    Returns:
+        array with smoothly applied floor
+    """
+    return floor_min + scale * np.log1p(np.exp((x - floor_min) / scale))
