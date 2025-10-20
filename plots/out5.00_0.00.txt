@@ -1,0 +1,85 @@
+Filename: /Users/rishi/Documents/Analysis/data/aligned-ml-wholesky-neg-ext0.0.fits.gz
+Source: Drip0
+  SNRs: ['SNR G012.8-00.0' 'NAME AGPS 273.4-17.8']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip1
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1809-1917']
+  SFRs: None
+--------------------------------------------------
+Source: Drip2
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip3
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR B1800-21']
+  SFRs: None
+--------------------------------------------------
+Source: Drip4
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip16
+  SNRs: ['SNR G359.9-00.9' 'SNR G000.3+00.0' 'NAME Sgr A East']
+  LMXBs: ['CXOGC J174540.0-290031' '1E 1742.2-2857' 'INTREF   837'
+ '2MASS J17455993-2854498' '2E 1742.5-2858' '1E 1742.7-2902'
+ '1E 1742.5-2845' '1E 1742.9-2852' '2E  3944' '2XMM J174502.1-285450'
+ 'AX J1745.6-2901' 'SWIFT J174540.7-290015']
+  HMXBs: None
+  Pulsars: ['NAME PSR J1746-2850I' 'CXOGC J174539.7-290022' 'PSR J1746-2856'
+ 'PSR J1746-2850' 'PSR J1746-2849' 'PSR J1745-2900']
+  SFRs: [['GAL 000.3-00.056' 266.63770916767237 -28.70909015216956 nan nan <NA>
+  'I' '2017MNRAS.469.2263B' 'SFR' '' nan <NA> <NA> '' nan <NA> nan <NA>
+  '' '' '' nan <NA> nan '' <NA> nan 'Star Forming Region']]
+--------------------------------------------------
+Source: Drip17
+  SNRs: ['GLOSTAR G005.378-00.280' 'GLOSTAR G005.673-00.118'
+ 'GLOSTAR G005.989+00.019' 'GAL 005.4-00.29' 'SNR G005.7-00.1']
+  LMXBs: ['IGR J17591-2342']
+  HMXBs: None
+  Pulsars: ['PSR J1759-24' 'PSR J1800-23']
+  SFRs: None
+--------------------------------------------------
+Source: Drip18
+  SNRs: ['MGCS 004.2+00.0']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['NAME ASKAP J175534.87-252749.1' 'PSR B1752-25.3']
+  SFRs: None
+--------------------------------------------------
+Source: Drip19
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1741-3016' 'PSR B1737-30.2']
+  SFRs: None
+--------------------------------------------------
+Source: Drip20
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1731-3123']
+  SFRs: None
+--------------------------------------------------
+Source: Drip21
+  SNRs: ['SNR G007.5-01.7']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1809-2332']
+  SFRs: None
+--------------------------------------------------
