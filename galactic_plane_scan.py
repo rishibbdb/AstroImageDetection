@@ -331,9 +331,9 @@ lowfreq_image = gaussian(lowfreq_image, sigma=3)
 
 # Find the blobs from the DoG image
 threshold_val = 0.01
-ps_blobs = blob_dog(norm_image, min_sigma=0.1/pixel_size, max_sigma=psf/pixel_size, threshold=threshold_val, exclude_border=20, overlap=0.5)
+ps_blobs = blob_dog(dog_image, min_sigma=0.1/pixel_size, max_sigma=psf/pixel_size, threshold=threshold_val, exclude_border=20, overlap=0.5)
 print("Number of point source blobs=",len(ps_blobs))
-ext_blobs = blob_dog(norm_image,min_sigma=psf/pixel_size, max_sigma=0.5/pixel_size, threshold=threshold_val, exclude_border=20, overlap=0.5)
+ext_blobs = blob_dog(dog_image,min_sigma=psf/pixel_size, max_sigma=0.5/pixel_size, threshold=threshold_val, exclude_border=20, overlap=0.5)
 print("Number of ext source blobs=",len(ext_blobs))
 
 ps_blobs = ps_blobs[ps_blobs[:, 2] < psf/pixel_size]

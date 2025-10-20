@@ -45,7 +45,7 @@ Source: Drip14
  'PSR J1746-2850' 'PSR J1746-2849' 'PSR J1745-2900']
   SFRs: [['GAL 000.3-00.056' 266.63770916767237 -28.70909015216956 nan nan <NA>
   'I' '2017MNRAS.469.2263B' 'SFR' '' nan <NA> <NA> '' nan <NA> nan <NA>
-  '' '' nan <NA> '' nan '' <NA> nan 'Star Forming Region']]
+  '' '' <NA> nan <NA> '' '' nan nan 'Star Forming Region']]
 --------------------------------------------------
 Source: Drip15
   SNRs: ['GLOSTAR G005.378-00.280' 'GLOSTAR G005.673-00.118'

@@ -1,0 +1,106 @@
+Filename: /Users/rishi/Documents/Analysis/data/aligned-ml-wholesky-neg-ext0.0.fits.gz
+Source: Drip0
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR B1823-13']
+  SFRs: None
+--------------------------------------------------
+Source: Drip1
+  SNRs: ['SNR G012.8-00.0' 'NAME AGPS 273.4-17.8']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip2
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1809-1917']
+  SFRs: None
+--------------------------------------------------
+Source: Drip3
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1826-1256']
+  SFRs: None
+--------------------------------------------------
+Source: Drip4
+  SNRs: None
+  LMXBs: None
+  HMXBs: ['V* V479 Sct']
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip5
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1831-0941' 'PSR J1831-0952']
+  SFRs: None
+--------------------------------------------------
+Source: Drip6
+  SNRs: ['SNR G023.3-00.3']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1834-0845']
+  SFRs: None
+--------------------------------------------------
+Source: Drip7
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1813-1246']
+  SFRs: None
+--------------------------------------------------
+Source: Drip8
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR B1800-21']
+  SFRs: None
+--------------------------------------------------
+Source: Drip9
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip10
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip15
+  SNRs: None
+  LMXBs: None
+  HMXBs: ['V* V4641 Sgr']
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip25
+  SNRs: ['GLOSTAR G005.673-00.118' 'GLOSTAR G005.989+00.019' 'SNR G005.7-00.1']
+  LMXBs: ['IGR J17591-2342']
+  HMXBs: None
+  Pulsars: ['PSR J1759-24' 'PSR J1800-23']
+  SFRs: None
+--------------------------------------------------
+Source: Drip26
+  SNRs: ['[BGG2006] G15.51-0.15' 'SNR G015.4+00.1']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1818-1519' 'PSR B1815-15.7']
+  SFRs: None
+--------------------------------------------------
+Source: Drip27
+  SNRs: ['SNR G007.5-01.7']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1809-2332']
+  SFRs: None
+--------------------------------------------------
