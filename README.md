@@ -30,5 +30,5 @@ NOTE:
 
 ```
 
-If you there are comments/questions/suggestion on the running the script, contact Rishi Babu (rbabu@icecube.wisc.edu)
+If you there are comments/questions/suggestion on the running the script, contact Rishi Babu (rbabu@icecube.wisc.edu) or Ian Herzog (herzogia@msu.edu) or Dan Salazar (salaza82@msu.edu) or Palmer Wentworth (itomura@msu.edu)
 
