@@ -6,9 +6,9 @@
 
 Git Repo for Basic Source Seed Detection using Image Processing
 
-You need to [finder.py](finder.py) file which loades in the significance fits files of your region and creates the final seeds of your ROI. You just need to run this!
+You need to [galactic_plane_scan.py](galactic_plane_scan.py) file which loades in the significance fits files of your region and creates the final seeds of your ROI. You just need to run this and yes it does more than just the galactic plane scan! 
 
-In the [finder.py](finder.py) file there are  multiple arguments
+In the [galactic_plane_scan.py](galactic_plane_scan.py) file there are  multiple arguments
 - [ ] Required arguments:
 - [ ] "-M", "--map", "Significance Map file in root format" 
 - [ ] --ROI-center ROI Center of the image (ra, dec) or (l, b)

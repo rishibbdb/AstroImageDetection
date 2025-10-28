@@ -1,0 +1,36 @@
+Filename: ../data/aligned-ml-wholesky-neg-ext0.0.fits.gz
+Source: Drip0
+  SNRs: ['SNR G012.7+00.0' 'SNR G012.8-00.0' 'NAME AGPS 273.4-17.8']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip1
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1809-1917']
+  SFRs: None
+--------------------------------------------------
+Source: Drip2
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR B1800-21']
+  SFRs: None
+--------------------------------------------------
+Source: Drip6
+  SNRs: ['GLOSTAR G005.673-00.118' 'GLOSTAR G005.989+00.019' 'SNR G005.7-00.1']
+  LMXBs: ['IGR J17591-2342']
+  HMXBs: None
+  Pulsars: ['PSR J1759-24' 'PSR J1800-23']
+  SFRs: None
+--------------------------------------------------
+Source: Drip7
+  SNRs: ['SNR G007.5-01.7']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1809-2332']
+  SFRs: None
+--------------------------------------------------

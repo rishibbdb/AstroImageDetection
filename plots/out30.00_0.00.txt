@@ -1,0 +1,159 @@
+Filename: /Users/rishi/Documents/Analysis/data/aligned-ml-wholesky-neg-ext0.0.fits.gz
+Source: Drip0
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1837-0653']
+  SFRs: None
+--------------------------------------------------
+Source: Drip1
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1849-0001']
+  SFRs: None
+--------------------------------------------------
+Source: Drip2
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip3
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip4
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip5
+  SNRs: ['SNR G032.8-00.1']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['GPPS 98']
+  SFRs: None
+--------------------------------------------------
+Source: Drip6
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1858+02']
+  SFRs: None
+--------------------------------------------------
+Source: Drip7
+  SNRs: ['SNR G028.7-00.2' 'SNR G028.6-00.1' 'GRS G028.60 -00.13']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip8
+  SNRs: ['SNR G027.3-00.2' 'GAL 027.2-00.4']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip9
+  SNRs: ['GLOSTAR G022.045-00.028']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1831-0941' 'PSR J1831-0952']
+  SFRs: None
+--------------------------------------------------
+Source: Drip10
+  SNRs: ['SNR G023.3-00.3']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J1834-0845']
+  SFRs: None
+--------------------------------------------------
+Source: Drip11
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip12
+  SNRs: ['SNR G031.22-00.02' 'GLOSTAR G031.256-00.041']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip13
+  SNRs: ['SNR G037.62-00.22' 'GAL 037.6-00.3']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['GPPS 16']
+  SFRs: None
+--------------------------------------------------
+Source: Drip14
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip15
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip16
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip17
+  SNRs: ['[ADD2012] SNR  2' 'SNR G021.5-00.9']
+  LMXBs: None
+  HMXBs: ['ATO J278.3657-10.5901']
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip18
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip25
+  SNRs: ['SNR G025.4-00.2' 'SNR G025.49+00.01' 'SNR G026.13+00.13'
+ 'GAL 025.9-00.3']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR B1835-06.1' 'PSR J1838-0624' 'PSR B1836-06.5' 'PSR B1836-06.7']
+  SFRs: [['[RM2010] SFC 12' 279.575 -6.118333333333334 nan nan <NA> ''
+  '2011ApJ...729..133M' 'SFR' '2011ApJ...729..133M' 8.8 1 1 'kin     '
+  nan <NA> nan <NA> '' 'kpc ' nan '' <NA> nan <NA> '' nan
+  'Star Forming Region']
+ ['GAL 025.82-00.17' 279.7553138611471 -6.404098579550828 nan nan <NA> ''
+  '2020ApJ...896..127K' 'SFR' '' nan <NA> <NA> '' nan <NA> nan <NA> '' ''
+  nan '' <NA> nan <NA> '' nan 'Star Forming Region']
+ ['GRS G024.80 +00.10' 279.56166666666667 -6.7941666666666665 20000.0
+  20000.0 90 '' '1984A&AS...58..197R' 'SFR' '2003ApJ...582..756K' 4.0 1 1
+  '' nan <NA> nan <NA> '' 'kpc ' nan '' <NA> nan <NA> '' nan
+  'Star Forming Region']]
+--------------------------------------------------
+Source: Drip32
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------

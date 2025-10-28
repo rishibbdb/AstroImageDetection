@@ -1,0 +1,50 @@
+Filename: ../data/aligned-ml-wholesky-neg-ext0.0.fits.gz
+Source: Drip0
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['[MT91] 213']
+  SFRs: None
+--------------------------------------------------
+Source: Drip1
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip2
+  SNRs: ['SNR G078.1+01.8']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['GPPS 87' 'PSR J2021+4026']
+  SFRs: None
+--------------------------------------------------
+Source: Drip6
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip7
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J2016+4231']
+  SFRs: None
+--------------------------------------------------
+Source: Drip8
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: ['PSR J2030+3641']
+  SFRs: None
+--------------------------------------------------
+Source: Drip9
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------

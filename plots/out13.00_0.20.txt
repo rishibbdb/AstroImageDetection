@@ -1,0 +1,15 @@
+Filename: /Users/rishi/Documents/Analysis/J1813/Energybins/Pass5f_0.0ext.fits.gz
+Source: Drip0
+  SNRs: ['SNR G012.7+00.0' 'SNR G012.8-00.0' 'NAME AGPS 273.4-17.8']
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------
+Source: Drip1
+  SNRs: None
+  LMXBs: None
+  HMXBs: None
+  Pulsars: None
+  SFRs: None
+--------------------------------------------------

@@ -1,5 +1,5 @@
 import time
-
+# python galactic_plane_scan.py -M /Users/rishi/Documents/Analysis/data/aligned-ml-wholesky-neg-ext0.0.fits.gz --size 10 8 --plotPDF True --ROI-center 60 0
 start_time = time.time()
 import os
 import yaml
@@ -50,9 +50,9 @@ parser = ap.ArgumentParser(
 )
 
 parser.add_argument(
-    "-M", "--map", default=ap.SUPPRESS, required=True, help="Significance Map file in root format"
+    "-M", "--map", default=ap.SUPPRESS, required=True, help="Significance Map file in fits format"
 )
-parser.add_argument("--ROI-center",action="store",required=True,dest="roiCenter",type=float,nargs=2,default=None,help="ROI Center of the image (ra, dec)",)
+parser.add_argument("--ROI-center",action="store",required=True,dest="roiCenter",type=float,nargs=2,default=None,help="ROI Center of the image (ra, dec)/ (l, b)",)
 parser.add_argument("--coordsys",action="store",dest="coordsys",default='G',help="Image Coordinate: 'G', 'C'.  (Default: 'G')",)
 parser.add_argument("--size",action="store",dest="size",type=float,nargs=2,default=(5, 5),help="ROI Size for the image(Default: 5 x 5 degrees)",)
 parser.add_argument("--plot4HWC",action="store",dest="plot4hwc",default=False,help="Overlay 4HWC Catalog Results",)
@@ -461,7 +461,7 @@ blobs_dict = {
     'psblobs': ps_filtered_blobs2,
     'extblobs': ext_filtered_blobs2,
 }
-make_plots(array, wcs, pixel_size,threshold=4, coordsys='G',hotspots=seed_final, title=f'SkyMap', cmap='ult', labels=['4hawc'], save_dir=outdir, pdf=pdf, figsize=(16, 8))
+make_plots(array, wcs, pixel_size,threshold=5, coordsys='G',hotspots=seed_final, title=f'SkyMap', cmap='ult', labels=['4hawc'], save_dir=outdir, pdf=pdf, figsize=(16, 8))
 
 
 otype_dict = {
