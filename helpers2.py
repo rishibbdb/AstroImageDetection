@@ -132,7 +132,7 @@ def loadmap(filename, coord_sys, coords,*args):
         skymap_data = ihdu[1].data["significance"] #.data["significance"]
         ihdu[1].header['COORDSYS'] = 'icrs    '
         wcs = WCS(target_header)
-        print(wcs)
+        # print(wcs)
         array, footprint = reproject_from_healpix(ihdu[1],target_header)
         print("Fits File loaded")
         
@@ -302,26 +302,81 @@ def plot_ext_blob(ax, ext_blobs, wcs):
     except:
         pass
 
-def blob_filter_intensity(blobs, image, min_intensity, wcs, npix):
-    hfiltered_blobs = []
-    hfiltered_coords = []
-    hfiltered_radius = []
-    for blob in blobs:
-        y, x, r = blob
-        y_min, y_max = int(max(y - r, 0)), int(min(y + r, np.array(image).shape[0]))
-        x_min, x_max = int(max(x - r, 0)), int(min(x + r, np.array(image).shape[1]))
-        y_grid, x_grid = np.ogrid[y_min:y_max, x_min:x_max]
-        distance_from_center = np.sqrt((y_grid - y)**2 + (x_grid -x)**2)
-        circular_mask = distance_from_center <= r-0.2*r
-        mean_intensity = np.array(image)[y_min:y_max, x_min:x_max][circular_mask].mean()
-        if min_intensity <= mean_intensity :
-            coord = astropy_utils.pixel_to_skycoord(x, y, wcs=wcs)
-            hfiltered_blobs.append(blob)
-            hfiltered_coords.append(coord.icrs)
-            hfiltered_radius.append(r*npix)
-            print(r"Blob Intensity {}, Coords ({}, {}), Radius {}, Pixel Radius {}".format(mean_intensity, coord.icrs.ra, coord.icrs.dec, r, r*npix))
-    return hfiltered_blobs, hfiltered_coords, hfiltered_radius
+import numpy as np
+from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
 
+# def blob_filter_intensity(blobs, image, min_intensity, wcs, npix):
+#     image = np.asarray(image)
+#     nrows, ncols = image.shape
+
+#     filtered_blobs = []
+#     filtered_coords = []
+#     filtered_radius = []
+
+#     for y, x, r in blobs:
+#         y_min = int(max(y - r, 0))
+#         y_max = int(min(y + r, nrows))
+#         x_min = int(max(x - r, 0))
+#         x_max = int(min(x + r, ncols))
+#         patch = image[y_min:y_max, x_min:x_max]
+#         yy, xx = np.ogrid[y_min:y_max, x_min:x_max]
+#         dist = np.sqrt((yy - y)**2 + (xx - x)**2)
+#         mask = dist <= (0.9 * r)
+#         if not np.any(mask):
+#             continue
+#         mean_intensity = patch[mask].mean()
+#         if mean_intensity >= min_intensity:
+#             coord = astropy_utils.pixel_to_skycoord(x, y, wcs=wcs).icrs
+
+#             filtered_blobs.append((y, x, r))
+#             filtered_coords.append(coord)
+#             filtered_radius.append(r * npix)
+
+#             print(
+#                 f"Blob Intensity {mean_intensity:.3f}, "
+#                 f"Coords ({coord.ra}, {coord.dec}), "
+#                 f"Radius {r:.2f}, Pixel Radius {r*npix:.2f}"
+#             )
+
+#     return filtered_blobs, filtered_coords, filtered_radius
+
+def blob_filter_intensity(blobs, image, min_intensity, wcs, npix):
+    filtered_blobs = []
+    filtered_coords = []
+    filtered_radius = []
+
+    image = np.asarray(image)
+    nrows, ncols = image.shape
+
+    for y, x, r in blobs:
+
+        # Extract local patch
+        y_min = int(max(y - r, 0))
+        y_max = int(min(y + r, nrows))
+        x_min = int(max(x - r, 0))
+        x_max = int(min(x + r, ncols))
+
+        patch = image[y_min:y_max, x_min:x_max]
+        yy, xx = np.ogrid[y_min:y_max, x_min:x_max]
+        dist = np.sqrt((yy - y)**2 + (xx - x)**2)
+        mask = dist <= (0.9 * r)
+        inside_pixels = patch[mask]
+        if np.any(inside_pixels > min_intensity):
+
+            coord = astropy_utils.pixel_to_skycoord(x, y, wcs=wcs).icrs
+
+            filtered_blobs.append((y, x, r))
+            filtered_coords.append(coord)
+            filtered_radius.append(r * npix)
+
+            # print(
+            #     f"Blob accepted: max pixel={inside_pixels.max():.3f}, "
+            #     f"Coords ({coord.ra}, {coord.dec}), "
+            #     f"Radius={r:.2f}, Angular Radius={r*npix:.3f}"
+            # )
+
+    return filtered_blobs, filtered_coords, filtered_radius
 
 def blob_filter_overlap(hfiltered_blobs, hfiltered_coords, hfiltered_radius, hfiltered_blobs2, hfiltered_coords2, hfiltered_radius2):
     i=0
@@ -1199,8 +1254,7 @@ def analyze_histogram(dog_image, plot=False, save_pdf=False, pdf=None):
         if np.all(deviation_mask[i:]):
             j = i
             break
-    if j is None:
-        j=0
+    
     mask_deviation_value = bin_centers[j]
     print(f"Significant deviation from Gaussian on positive side at:{j},  {mask_deviation_value:.5f}")
     excess_pixel_mask = dog_image.flatten() > mask_deviation_value
@@ -1254,3 +1308,71 @@ def analyze_histogram(dog_image, plot=False, save_pdf=False, pdf=None):
         plt.legend()
         plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     return mask_deviation_value, deviation_2sig, deviation_3sig
+
+def remove_overlapping_blobs(blobs, coords, radii, overlap_threshold=0.5):
+    """
+    Remove overlapping blobs, keeping the one with larger radius.
+    Parameters:
+    -----------
+    blobs : array of shape (n_blobs, 3)
+        Each row: [y, x, radius]
+    coords : list of SkyCoord objects
+        Corresponding sky coordinates
+    radii : list of float
+        Corresponding radii values
+    overlap_threshold : float
+        Fraction of overlap to consider blobs as duplicates
+    Returns:
+    --------
+    filtered_blobs, filtered_coords, filtered_radii : kept blobs
+    removed_blobs, removed_coords, removed_radii : removed blobs
+    """
+    if len(blobs) == 0:
+        return blobs, coords, radii, np.empty((0, 3)), [], []
+
+    sorted_indices = np.argsort(blobs[:, 2])[::-1]
+    sorted_blobs  = blobs[sorted_indices]
+    sorted_coords = [coords[i] for i in sorted_indices]
+    sorted_radii  = [radii[i]  for i in sorted_indices]
+
+    keep_mask = np.ones(len(sorted_blobs), dtype=bool)
+
+    for i in range(len(sorted_blobs)):
+        if not keep_mask[i]:
+            continue
+
+        for j in range(i + 1, len(sorted_blobs)):
+            if not keep_mask[j]:
+                continue                      # already removed, skip
+
+            dy       = sorted_blobs[i, 0] - sorted_blobs[j, 0]
+            dx       = sorted_blobs[i, 1] - sorted_blobs[j, 1]
+            distance = np.sqrt(dy**2 + dx**2)
+            smaller_r = min(sorted_blobs[i, 2], sorted_blobs[j, 2])
+            overlap  = (sorted_blobs[i, 2] + sorted_blobs[j, 2] - distance) / smaller_r
+
+            if overlap > overlap_threshold:
+                keep_mask[j] = False          # i is larger (sorted), so drop j
+
+    remove_mask = ~keep_mask
+
+    filtered_blobs  = sorted_blobs[keep_mask]
+    filtered_coords = [c for k, c in enumerate(sorted_coords) if keep_mask[k]]
+    filtered_radii  = [r for k, r in enumerate(sorted_radii)  if keep_mask[k]]
+
+    removed_blobs  = sorted_blobs[remove_mask]
+    removed_coords = [c for k, c in enumerate(sorted_coords) if remove_mask[k]]
+    removed_radii  = [r for k, r in enumerate(sorted_radii)  if remove_mask[k]]
+
+    return filtered_blobs, filtered_coords, filtered_radii, removed_blobs, removed_coords, removed_radii
+
+
+def combine_blobs(all_blobs, all_coords, all_radii):
+    """Flatten per-radius blob lists into single combined arrays."""
+    if len(all_blobs) > 0:
+        return (
+            np.vstack(all_blobs),
+            [coord   for sublist in all_coords  for coord   in sublist],
+            [radius  for sublist in all_radii   for radius  in sublist],
+        )
+    return np.empty((0, 3)), [], []
